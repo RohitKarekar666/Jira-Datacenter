@@ -1,0 +1,28 @@
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.bc.user.UserService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.bc.user.UserService
+
+def userService = ComponentAccessor.getComponent(UserService)
+def admin = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+def username = "some.username"  // change me
+
+// validate -> returns UserService.DeleteUserValidationResult
+def validation = userService.validateDeleteUser(admin, "ApoorvaX")
+
+// to check the user is valid or not
+return validation.isValid()
+
+// to check if there any issues are present with this user
+//return validation.errorCollection
+
+// To delete user from the database but don’t run this command without approval
+/*
+if (validation.isValid()) {
+    userService.removeUser(admin, validation)   // consumes the validation result
+    return "Deleted user ${username}"
+} else {
+    return "Cannot delete ${username}: ${validation.errorCollection?.errorMessages}"
+}
+*/
