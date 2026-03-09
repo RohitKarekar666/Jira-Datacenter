@@ -1,0 +1,30 @@
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+import com.atlassian.jira.issue.ModifiedValue
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def log = Logger.getLogger("Fetching base URL")
+log.setLevel(Level.DEBUG)
+
+log.debug("Script Started")
+
+IssueManager im = ComponentAccessor.getIssueManager()
+MutableIssue issue = im.getIssueObject("CAT-1")
+
+def baseurl = com.atlassian.jira.component.ComponentAccessor.getApplicationProperties().getString("jira.baseurl")
+
+if(issue){
+
+    log.debug(baseurl + "/browse" + issue.key)
+    log.debug("script ended")
+    return baseurl + "/browse/" + issue.key
+
+}
+
+else{
+
+    return "issue dosen't exist"
+}
