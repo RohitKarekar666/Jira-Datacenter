@@ -1,0 +1,38 @@
+1>Go to script runner
+2>select script editor
+3>click on create script and given the name
+4>add the below script and save
+
+import com.onresolve.scriptrunner.parameters.annotation.UserPicker
+import com.onresolve.scriptrunner.parameters.annotation.GroupPicker
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.crowd.embedded.api.Group
+
+// ---- Form parameters (these make the form render) ----
+@UserPicker(
+    label = 'Select user',
+    description = 'Pick the user to add to the group' 
+)
+ApplicationUser user
+
+@GroupPicker(
+    label = 'Select group',
+    description = 'Pick the target group'
+)
+Group group
+// ---- Script logic ----
+def groupManager = ComponentAccessor.getGroupManager()
+def userUtil = ComponentAccessor.getUserUtil()
+
+assert user : "User is required"
+assert group : "Group is required"
+if (!groupManager.isUserInGroup(user, group)) {
+    userUtil.addUserToGroup(group, user)
+    return "✅ Added ${user?.username ?: user?.name} to group '${group.name}'."
+} else {
+    return "ℹ️ User ${user?.username ?: user?.name} is already in group '${group.name}'."
+}
+5>now come to console 
+6>select the created script file
+7>Run
