@@ -1,0 +1,13 @@
+1>Go to script runner
+2>Click on built in script
+3>Select user
+4>Select switch to a different user
+5>now copy the URL from the bowser
+6>Now click to jira admin settings
+7>Click on applications
+8>Now click on Application navigator
+9>Given the name – Switch User
+10>Paste the URL in the URL section
+11>Add the group whom you want to get the permissions
+12>Now click on Add
+13>It will display the shortcut menu top left hand side
