@@ -1,0 +1,13 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.config.PriorityManager
+import com.atlassian.jira.issue.fields.config.PrioritySchemeService
+import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager
+import com.atlassian.jira.issue.fields.config.manager.PrioritySchemeManager
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def log = Logger.getLogger("www.google.com")
+log.setLevel(Level.DEBUG)
+
+ComponentAccessor.getComponent(PrioritySchemeManager).getAllSchemes()*.name //it will display all the priority schemes
+ComponentAccessor.getComponent(PriorityManager).getPriorities()*.name // it will display all the priorities
