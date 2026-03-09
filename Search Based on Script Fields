@@ -1,0 +1,19 @@
+1>Go to script runner
+2>click on field
+3>click on custom script field
+4>Give name – Comment Count
+5>Select Template – number field
+6>Add the below script
+import com.atlassian.jira.issue.comments.CommentManager
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+
+CommentManager commentnMgr = ComponentAccessor.getCommentManager()
+
+commentnMgr.getComments(issue).size()
+7>Click on add
+8>Now go to fields
+9>Search for the field and click on edit details
+10>Select search template as Number Searcher
+11>Now go to project and add this Comment Count field it will display the number
