@@ -1,0 +1,24 @@
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.comments.CommentManager
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.user.ApplicationUser
+
+CommentManager CommentMgr = ComponentAccessor.getCommentManager()
+ApplicationUser currentUser = ComponentAccessor.getJiraAuthenticationContext().loggedInUser
+
+IssueManager im = ComponentAccessor.getIssueManager()
+MutableIssue issue = im.getIssueObject("JST-7448")
+
+def lastComment = CommentMgr.getComments(issue).last().body
+def links = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId())
+
+def output = ""
+
+for(l in links){
+    output = output + l.issueLinkType.name + ": " + l.getDestinationObject()
+    CommentMgr.create(l.getDestinationObject(),currentUser,lastComment,false)
+}
+
+return output
