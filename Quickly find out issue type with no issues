@@ -1,0 +1,17 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.config.IssueTypeManager
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def log = Logger.getLogger("www.google.com")
+log.setLevel(Level.DEBUG)
+
+IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager)
+//issueTypeManager.getIssueTypes()*.name //display list of the issue types names
+
+issueTypeManager.getIssueTypes()*.each {
+
+   log.debug(it.name) //to diplay the issue type names
+   log.debug(it.name + ": " + issueTypeManager.hasAssociatedIssues(it)) //it will display any issues are present in the Issue type or not
+
+}
