@@ -1,0 +1,12 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.config.IssueTypeManager
+
+IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager)
+
+issueTypeManager.getIssueTypes()*.name //provide you list of issue types which are present in the Jira
+
+issueTypeManager.getIssueTypes()*.avatar*.id //to get all the avatar ID's (it is picture of the issuetype)
+
+issueTypeManager.createIssueType("Test Task", "This is bundle of Test task", 25211) //it will create a new issuetype
+
+issueTypeManager.getIssueTypes()*.name
