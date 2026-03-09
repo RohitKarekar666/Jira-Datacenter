@@ -1,0 +1,30 @@
+//workflow imports
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.issue.IssueInputParametersImpl
+import com.atlassian.jira.bc.issue.IssueService
+import com.atlassian.jira.workflow.JiraWorkflow
+import com.atlassian.jira.workflow.WorkflowManager
+import com.atlassian.jira.component.ComponentAccessor
+ApplicationUser currentUser = ComponentAccessor.getJiraAuthenticationContext().loggedInUser
+IssueManager im = ComponentAccessor.getIssueManager();
+MutableIssue issue = im.getIssueObject("CAT-1");
+
+//workflow
+WorkflowManager workflowManager = ComponentAccessor.getWorkflowManager()
+JiraWorkflow workflow = workflowManager.getWorkflow(issue)
+//return workflow.name //Display the workflow name
+//return workflow.getLinkedStep(issue.getStatus()).id //Display the current id of the status
+//return workflow.getLinkedStep(issue.getStatus()).getName() // Display the current status name
+//return workflow.getLinkedStep(issue.getStatus()).getActions().id
+
+def actionID = 31 
+IssueService issueService = ComponentAccessor.getIssueService()
+def transitionValidationResult = issueService.validateTransition(currentUser, issue.id, actionID, new IssueInputParametersImpl())
+
+//return transitionValidationResult.isValid()
+
+def transitionRestult = issueService.transition(currentUser, transitionValidationResult)
+return transitionRestult
