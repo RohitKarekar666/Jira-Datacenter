@@ -1,0 +1,21 @@
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.workflow.WorkflowManager
+
+WorkflowManager workflowManager = ComponentAccessor.getWorkflowManager()
+
+//log.error workflowManager.getWorkflows().size() // it will show the count of total workflow including active and inactive
+
+//log.error workflowManager.getActiveWorkflows().size() // to display active workflow
+
+//log.error workflowManager.getWorkflows()*.getName() // to display the name of the workflow
+
+//log.error workflowManager.getWorkflows()*.getAllActions() // it will display the transition which are used among all the workflows
+
+//if you want to find our which workflow name is used for this particular issue
+
+IssueManager im = ComponentAccessor.getIssueManager()
+MutableIssue issue = im.getIssueObject("CAT-2")
+
+workflowManager.getWorkflow(issue).name
