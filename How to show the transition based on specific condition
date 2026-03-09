@@ -1,0 +1,22 @@
+1>Open the project
+2>go to admin settings
+3>click on workflow scheme
+4>Open the workflow where you to apply these settings
+5>click on edit workflow
+6>select the transition where you want to apply these condition
+7> now click on condition
+8>Add condition
+9>Select simple scripted condition
+10> Note -> if the closed date is greater than today date
+11>add below condition
+cfValues[“Closed Date”] > new Date()
+12> Now follow the same thing for the other transition but add the below condition
+cfValues[“Closed Date”] < new Date()
+13>Now publish the workflow and test
+
+Below is my workflow where we have 2 transitions for In Progress
+
+To Do -> All
+To Do -> InProgress
+InProgress -> All
+Done -> All
