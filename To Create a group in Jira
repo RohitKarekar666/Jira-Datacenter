@@ -1,0 +1,29 @@
+import com.atlassian.crowd.exception.embedded.InvalidGroupException
+import  com.atlassian.jira.component.ComponentAccessor
+
+try {
+ComponentAccessor.getGroupManager().createGroup("Demo Group")
+}
+
+catch (InvalidGroupException invalidGroupException) {
+
+    log.warn("Error creating the group" + invalidGroupException.message)
+}
+
+Another method -->>>  You can also use the below command to create group
+
+import com.atlassian.crowd.exception.embedded.InvalidGroupException
+import  com.atlassian.jira.component.ComponentAccessor
+
+def groupName = "Demo group 123"
+
+try {
+ComponentAccessor.getGroupManager().createGroup(groupName)
+log.error("Group created : $groupName")
+
+}
+
+catch (InvalidGroupException invalidGroupException) {
+
+    log.warn("Error creating the group : $groupName --" + invalidGroupException.message)
+}
