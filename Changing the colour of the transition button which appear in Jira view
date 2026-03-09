@@ -1,0 +1,38 @@
+1>Go to script runner
+2>Click on UI Fragments
+3>Click on create UI Fragments
+4>Now select Install web resource
+5>Provide the name
+6>select the context -> customerportal, jira.view.issue
+7>create a key example issue-view-colour (key should be different/unique)
+8>style.css
+9>click on update
+
+Create a resource: test-resources/red-text.css.
+a.	Create the test-resources folder within the web-resources/com.onresolve.jira.groovy.groovyrunner directory.
+b.	Create a file named red-text.css.
+c.	Edit that file in a text editor.
+d.	Enter the following contents:
+
+Note : go to jira select the button -> right click inspect->now check the id number
+/* To do transition*/
+a/action_id_11{
+	background: grey;
+	boarder-radius: 10px;
+	color: #ffffff;
+}
+
+/* In Progress transition*/
+a/action_id_21{
+	background: blue;
+	boarder-radius: 10px;
+	color: #ffffff;
+}
+
+/* Done transition*/
+a/action_id_31{
+	background: green;
+	boarder-radius: 10px;
+	color: #ffffff;
+}
+e.	Save the file
