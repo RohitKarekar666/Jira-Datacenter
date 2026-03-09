@@ -1,0 +1,41 @@
+import com.atlassian.jira.bc.issue.search.SearchService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.web.bean.PagerFilter
+// --- inputs ---
+final String projectKey     = "CAT"
+final String fromProjectKey = "JST"
+final String jqlQuery       = "project = ${projectKey}"
+// --- services ---
+def searchService = ComponentAccessor.getComponent(SearchService.class)
+def issueManager  = ComponentAccessor.getIssueManager()
+def user          = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+// --- search ---
+def parse = searchService.parseQuery(user, jqlQuery)
+assert parse.isValid() : "Invalid JQL: ${jqlQuery} -> ${parse.errors}"
+
+def result  = searchService.search(user, parse.query, PagerFilter.getUnlimitedFilter())
+// Jira 8/9/10 -> use getResults()
+List<Issue> issues = result.getResults()
+
+// --- log each mapping ---
+int lines = 0
+issues.each { issue ->
+    // all keys issue ever had (includes current)
+    def allKeys = issueManager.getAllIssueKeys(issue.id)
+
+    // only previous keys from the source project (exclude current)
+    def previousKeys = allKeys.findAll { it != issue.key && it.startsWith("${fromProjectKey}-") }
+
+    previousKeys.each { prevKey ->
+        log.warn(" ${prevKey} -> ${issue.key}")
+        lines++
+    }
+}
+
+//log.warn("previous project -> ${prevKey} Current Project-> ${issue.key}")
+// final summary
+//log.warn("Done. Logged ${lines} line(s).")
+
+// Keep the 'Result' pane short; the details are in Logs.
+return "See Logs tab for output"
