@@ -1,0 +1,12 @@
+import com.atlassian.jira.bc.JiraServiceContext
+import com.atlassian.jira.bc.JiraServiceContextImpl
+import com.atlassian.jira.bc.user.search.UserSearchService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.ApplicationUser
+
+def user = ComponentAccessor.jiraAuthenticationContext.LoggedInUser
+def query = ComponentAccessor.getComponent(UserSearchService)
+
+JiraServiceContext jiraServiceContext = new JiraServiceContextImpl(user)
+
+return query.findUsersAllowEmptyQuery(jiraServiceContext, "rkarekax")*.emailAddress //if you remove the user id it will list the all of user email ids
