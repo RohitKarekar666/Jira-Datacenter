@@ -1,0 +1,24 @@
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+
+IssueManager im = ComponentAccessor.getIssueManager()
+MutableIssue issue = im.getIssueObject("CAT-2")
+
+if(issue){
+    def customFieldManager = ComponentAccessor.getCustomFieldManager() //get the value
+
+    def cField = customFieldManager.getCustomFieldObjectsByName("Team/s")
+    
+    def cFieldValue = cField ? issue.getCustomFieldValue(cField[0]) : "Field doesn't exist"
+
+    log.debug "Custom field value type or class" + cFieldValue.getClass()
+    cFieldValue.eachWithIndex {it, i ->
+        log.warn "Country name $i: $it"
+    }
+
+   return cFieldValue
+
+}else {
+   return "Issue doesn't exist"
+} 
