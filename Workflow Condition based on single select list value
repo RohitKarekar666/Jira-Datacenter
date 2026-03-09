@@ -1,0 +1,19 @@
+1>open the project
+2>click on project setting then click on workflow
+3>Open the workflow where you want to add this condition
+4>select the workflow transition
+5>click on condition and then click on add condition
+6>now select script-runner custom script condition
+7>now enter the below script
+
+import  com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+def customer = ComponentAccessor.customFieldManager.getCustomFieldObjectsByName("Customer")
+def customerValue = customer?issue.getCustomFieldValue(customer[0]): "Not found"
+if (customerValue.toString() == "INDIA") {
+    passesCondition = true
+}else
+{
+    passesCondition = false
+}
