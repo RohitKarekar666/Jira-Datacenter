@@ -1,0 +1,27 @@
+1>Open Script Runner
+2>Click on Behaviour
+3>Click on crate behaviour
+4>Name – Required Comment
+5>Choose Project – CAT
+6>Click on Add Mapping and click on create
+7>Select the field – Security Level
+8>Click on create script
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+@BaseScript FieldBehaviours fieldBehaviours 
+def log = Logger.getLogger ("www.google.com")
+log.setLevel(Level.DEBUG)
+def commentField = getFieldById("comment")
+def changeFormField = getFieldById(fieldChanged)
+if (changeFormField.formValue.toString().contains("11801")) // check the security level ID internal - 11801, Private - 12005, Public - 11404
+{
+log.debug ("Required True")
+commentField.setRequired(true)
+}else
+{
+    log.debug("Required False")
+    commentField.setRequired(false)
+}
+9>Click on save changes
