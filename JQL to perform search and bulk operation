@@ -1,0 +1,24 @@
+import com.atlassian.jira.bc.issue.search.SearchService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.web.bean.PagerFilter
+
+def searchService = ComponentAccessor.getComponentOfType(SearchService)
+def user = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+
+def filter = 'assignee = ad_rkarekax'
+
+SearchService.ParseResult parseResult = searchService.parseQuery(user, filter)
+
+def results = searchService.search(user, parseResult.query, PagerFilter.unlimitedFilter)
+def issues = results.results
+
+log.warn("Total issues: ${issues.size()}")
+
+if (issues) {
+    log.warn("Issues (KEY - IssueType):")
+    issues.each { it ->
+        log.warn("${it.key} - ${it.issueType.name}")
+    }
+} else {
+    log.warn("No issues matched the JQL.")
+}
