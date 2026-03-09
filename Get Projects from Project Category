@@ -1,0 +1,34 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.project.ProjectManager
+def projectManager = ComponentAccessor.getProjectManager()
+// ----- CHANGE THIS TO THE CATEGORY NAME YOU WANT -----
+def category = projectManager.getProjectCategoryObjectByName("DSE")
+if (!category) {
+    return "Project Category '${category}' not found."
+}
+def projects = projectManager.getProjectsFromProjectCategory(category)
+def projectNames = projects*.name  // collect project names
+log.debug("Projects under category '${category.name}':\n" + projectNames.join("\n"))
+
+//if you want Project Name, Project Key, Project Lead Display Name and short ID
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.project.ProjectManager
+def projectManager = ComponentAccessor.getProjectManager()
+// ----- CHANGE THIS TO THE CATEGORY NAME YOU WANT -----
+def category = projectManager.getProjectCategoryObjectByName("DSE")
+def userManager = ComponentAccessor.getUserManager()
+if (!category) {
+    return "Project Category '${category}' not found."
+}
+def projects = projectManager.getProjectsFromProjectCategory(category)
+def projectNames = projects*.name  // collect project names
+def output = new StringBuilder()
+log.debug("Projects under category '${category.name}':\n\n")
+projects.each { project ->
+    def lead = userManager.getUserByName(project.leadUserName)
+    def leadDisplayName = lead?.displayName ?: "No Lead Assigned"
+    log.debug("• Project: ${project.name} (${project.key})\n")
+    log.debug("  Lead: ${leadDisplayName} [${project.leadUserName}]\n\n")
+}
+return output.toString()
