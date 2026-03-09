@@ -1,0 +1,13 @@
+1>Go to Script runner
+2>Click on UI Fragments
+3>Click on create UI Fragments
+4>Click on show web panel
+5> Name – Yet another release
+6>Location – atl.jira.releasereport.top.right.panels
+7>Key – release-panel-button-another
+8>Menu text – Yet another button
+9>weight – 2
+10>Provider class/script
+writer.write("<a href=\"https://www.google.com\" class=\" aui-button aui-button-primary \" style=\" margin-right: 2px;\"> Google.Com</a>")
+11>now click on add
+12>now go to release page and check the button will be available next to the release button
