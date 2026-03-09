@@ -1,0 +1,5 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def version = ComponentAccessor.versionManager.createVersion("Version 1",null,null,"Version 1 description",155300,null,false) // null are start date and end date
+
+return version.name
