@@ -1,0 +1,14 @@
+1>Open script runner
+2>click on script editor
+3>click on folder -> to create new folder
+4>click on script -> to create new script file
+5>write the query which you want to run and click on save
+6>click on Jobs
+7>create Job
+8>select custom job scheduled
+9>give the name
+10>select the user
+11>select the interval timing from the example -> when you want to run this script
+12>now in inline script select the file which you have created before
+13>click on add -> it will run on that time which you specified.
+If you run -> it will execute the command right away.
