@@ -1,0 +1,23 @@
+1>Go to script runner
+2>click on Listeners
+3>Click on create Listeners
+4>Name -> Create a Subtask based on Priority
+5>Applied to -> Select your project
+6>Event -> issue created
+7>condition -> add the below script
+return issue.priority?.name in ['P1-Stopper','P2-High']
+8>Target issue type -> Sub-task
+9>Field to Copy -> All
+10>Additional issue action -> add the below script
+
+import com.atlassian.jira.component.ComponentAccessor
+
+// 1) Assign to the requested user
+def u = ComponentAccessor.userManager.getUserByName('ad_rkarekax') ?: ComponentAccessor.userManager.getUserByKey('ad_rkarekax')
+issue.setAssignee(u)
+
+// Prefix summary with the parent's Priority label (e.g., "P1-Stopper" or "P2-High")
+def prio = sourceIssue.priority?.name ?: ''
+issue.setSummary("${prio}: ${sourceIssue.summary}")
+
+11>Click on Add
