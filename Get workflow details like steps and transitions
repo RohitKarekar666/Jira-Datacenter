@@ -1,0 +1,18 @@
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.workflow.WorkflowManager
+
+WorkflowManager workflowManager = ComponentAccessor.getWorkflowManager()
+
+workflowManager.getWorkflows().each { it ->
+
+    log.debug("workflow: " + it.name)
+    log.debug(it.getLinkedStatusObjects()*.name) //it will display the Linked Statuses
+
+    it.getLinkedStatusObjects().each { status ->
+        log.debug(it.getLinkedStep(status).name) //it will display all the steps
+        log.debug(it.getLinkedStep(status).getActions()) //it will display all the transitions
+     
+    }
+}
