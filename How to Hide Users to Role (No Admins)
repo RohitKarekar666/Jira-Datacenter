@@ -1,0 +1,42 @@
+1>Go to script runner
+2>Click on UI Fragments
+3>Click on create UI Fragments
+4>Now select show a web panel
+5>Provide the name
+6>select the context -> atl.jira.proj.config.header
+7>create a key hide-add-users-roles
+8>add below custom script
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.permission.GlobalPermissionKey
+def user = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+def groupManager = ComponentAccessor.groupManager
+def permissionManager = ComponentAccessor.globalPermissionManager
+if (groupManager.isUserInGroup(user, "jira-administrators")) {
+    return
+}
+// Everyone else -> restrict "Add users to a role" button
+writer.write("""
+<script>
+(() => {
+  // Only run on Project Settings → Roles page
+  if (
+    !location.pathname.includes('/plugins/servlet/project-config/') ||
+    !location.pathname.endsWith('/roles')
+  ) return;
+  const buttonText = 'Add users to a role';
+  const hideButton = () =>
+    document.querySelectorAll('button').forEach(btn => {
+      if (btn.textContent?.trim() === buttonText) {
+        btn.style.display = 'none';
+      }
+    });
+  hideButton();
+  new MutationObserver(hideButton).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
+""")
+
+9>click on update
