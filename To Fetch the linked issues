@@ -1,0 +1,32 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.link.IssueLink
+// 1. Specify the issue key
+def issueKey = "JS-128544" 
+def issueManager = ComponentAccessor.getIssueManager()
+def issueLinkManager = ComponentAccessor.getIssueLinkManager()
+def issue = issueManager.getIssueObject(issueKey)
+if (!issue) {
+    return "Error: Issue ${issueKey} not found."
+}
+def result = new StringBuilder()
+result.append("Linked Issues for ${issueKey}:\n")
+result.append("-" * 50 + "\n")
+// 2. Fetch Outward Links (e.g., this issue 'blocks' another)
+def outwardLinks = issueLinkManager.getOutwardLinks(issue.id)
+result.append("OUTWARD LINKS:\n")
+if (!outwardLinks) result.append("  (None)\n")
+outwardLinks.each { link ->
+    def linkedIssue = link.getDestinationObject()
+    result.append("- [${link.issueLinkType.outward}] -> ${linkedIssue.key}: ${linkedIssue.summary} (${linkedIssue.status.name})\n")
+}
+result.append("\n")
+// 3. Fetch Inward Links (e.g., this issue 'is blocked by' another)
+def inwardLinks = issueLinkManager.getInwardLinks(issue.id)
+result.append("INWARD LINKS:\n")
+if (!inwardLinks) result.append("  (None)\n")
+inwardLinks.each { link ->
+    def linkedIssue = link.getSourceObject()
+    result.append("- [${link.issueLinkType.inward}] <- ${linkedIssue.key}: ${linkedIssue.summary} (${linkedIssue.status.name})\n")
+}
+// 4. Return string to display in the "Result" tab
+return result.toString()
