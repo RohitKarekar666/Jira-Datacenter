@@ -1,0 +1,21 @@
+import com.squareup.tape.Task
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.MutableIssue
+
+def project = ComponentAccessor.projectManager.getProjectObjByKey("CAT")
+def user = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+
+def parentIssue = ComponentAccessor.issueManager.getIssueByCurrentKey("CAT-4")
+
+MutableIssue issue = ComponentAccessor.issueFactory.issue
+issue.projectObject = project
+issue.summary = "Demo sub task ticket"
+//while creating issue just hide these below return command
+//return project.getIssueTypes()*.name //it will display the issue type names
+//return project.getIssueTypes()*.id //it will display the issue type id
+issue.issueTypeId = 28
+issue.assignee = user
+
+ComponentAccessor.issueManager.createIssueObject(user, issue)
+
+ComponentAccessor.subTaskManager.createSubTaskIssueLink(parentIssue, issue, user)
