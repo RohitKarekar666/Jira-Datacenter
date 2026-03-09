@@ -1,0 +1,31 @@
+1>Go to script runner
+2>click on behaviour
+3>click on create behaviour and give the name
+4>click on add mapping -> select the project and issue type
+5>Down now select the field and click on add
+6>now add server side script as below
+
+Note : you can play with existing link size and also you can add multiple link type
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.link.IssueLink
+
+def links = getFieldById("issuelinks")
+def linksValue = links.getValue()
+def linkType = getFieldById("issuelinks-linktype")
+def linkTypeValue = linkType.getValue()
+def linkField = getFieldById("issuelinks-issues")
+def linkFieldValue = linkField.getValue()
+
+log.debug("Links Value: " + linksValue)
+log.debug("Link Type Value: " + linkTypeValue)
+log.debug("Links value: " + linkFieldValue)
+
+def existingLinks = ComponentAccessor.getIssueLinkManager().getInwardLinks(underlyingIssue?.getId())
+
+if (existingLinks?.size() == 0 && linkTypeValue == "is blocked by") {
+
+    links.setRequired(true)
+} else {
+    links.setRequired(false)
+}
