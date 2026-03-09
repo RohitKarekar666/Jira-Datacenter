@@ -1,0 +1,15 @@
+Do not enter any query do if you want to test it do it for only for your test project
+
+1>Go to Script runner
+2>Click on Jobs
+3>Click on create jobs
+4>Select Issue archiving Job
+5>Give the name
+6>select the user
+7>now set interval/Cron expression ->Time when you want to execute
+8>Insert the JQL Query -> 1st create a query in the issue search to check which are issues are going showing, based on this you can copy and paste the JQL over here.
+9>Now click on Add
+
+Example : project = JST and resolution is not empty and updated <-104w order by created desc
+
+This will automatically run the job based on the timing you have specified.
