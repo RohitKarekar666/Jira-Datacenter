@@ -1,0 +1,17 @@
+import com.atlassian.jira.security.type.ProjectLead
+import com.atlassian.jira.component.ComponentAccessor
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def log = Logger.getLogger("www.google.com")
+log.setLevel(Level.DEBUG)
+
+def projectManager = ComponentAccessor.getProjectManager()
+
+projectManager.getArchivedProjects().each {it ->
+
+    log.debug(it.key)
+    log.debug(it.ProjectLead()*.name)
+    log.debug(it.getProjectCategoryObject()?.name)
+    log.debug(it.archived)
+}
