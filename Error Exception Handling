@@ -1,0 +1,18 @@
+This will help you to identify if the issue is present or not in the Jira
+
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+
+IssueManager im = ComponentAccessor.getIssueManager()
+MutableIssue issue = im.getIssueObject("CAT-1")
+
+if(issue){
+
+    return issue.getStatus().name
+
+}
+else{
+
+    return "Issue Doesn't Exits"
+}
