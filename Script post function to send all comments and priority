@@ -1,0 +1,28 @@
+1>Go to script runner
+2>click on workflow
+3>click on send a custom email
+4>give the name Email-CSTM-CAT-comments
+5>select the project -> select single project on which you want
+6>select the event when you want to get the email – now we are not selecting anything
+7>Enter the below code in the email template
+<ul>
+<li><b>Summary:</b> ${issue.summary}</li><br>
+<li><b>Issuekey:</b> ${issue.key}</li><br>
+<li><b>Priority:</b> ${issue.priority.name}</li><br>
+<li><b>Reporter:</b> ${issue.reporter}</li><br>
+<li><b>Created:</b> ${issue.created}</li><br>
+<li><b>Description:</b> ${issue.description}</li><br>
+<li><dl>
+<dt><b>All Comments:</b></dt>
+${com.atlassian.jira.component.ComponentAccessor.getCommentManager().getComments(issue).collect{it.body}.join('<br>')}
+<br>xxx
+</dl></li><br>
+<li><b>Text123</b><br> longer text sentence [....]
+</li>
+</ul>
+8>add the subject line in the subject template
+9>Email format should be HTML
+10>To  Address :  you can specify the email address whom you want to send
+11>To issue field : you can specify the role / group
+12>Preview issue key : CAT-3 to check I have given this issue key
+13>If you want to see the preview then click on preview or click on Add
