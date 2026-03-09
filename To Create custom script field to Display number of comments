@@ -1,0 +1,27 @@
+1>Go to script runner
+2>click on field tab
+3>select Custom script field
+4>Give the field name – Number of Comments
+5>Select the template – (field type) what kind of field type you want – number field
+6>add the below script
+
+import com.atlassian.jira.issue.comments.CommentManager
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.component.ComponentAccessor
+
+CommentManager commentMgr = ComponentAccessor.getCommentManager()
+//IssueManager im = ComponentAccessor.getIssueManager()
+//MutableIssue issue = im.getIssueObject("CAT-2")
+
+//return commentMgr.getComments(issue)*.body // to display the comment
+
+//def numberOfComments = commentMgr.getComments(issue).size()  //you wna to know the count of comments then you can run this command
+
+def numberOfComments = issue ? commentMgr.getComments(issue).size(): log.error("Issue doesn't exist") // it will display the count or it will display issue doesn't exits
+
+7>add the ticket number
+8>click on add
+9>Now click on search Template – Here select same field type
+10>Now click on update
+11>Also add the field on the screen where you want to display the comment
