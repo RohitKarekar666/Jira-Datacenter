@@ -1,0 +1,19 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.comments.CommentManager
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def log = Logger.getLogger("www.google.com")
+logsetLevel(Level.DEBUG)
+
+def projectManager = ComponentAccessor.getProjectManager()
+
+projectManager.getProjects().each { it ->
+
+    log.debug(it.key)  //to display the project key
+    log.debug(it.getIssueTypes()*.name)  //to display list of issue types under the project
+    log.debug(it.getComponents()*.name) //to display the list of components
+    log.debug(it.getProjectLead()*.username) // to display the project lead
+    log.debug(it.getVersions()*.name) // to display list of the version available in the project
+    log.debug(it.getProjectCategoryObject()?.name) // to display the project category we are using here ? to run the result if there is no category
+}
