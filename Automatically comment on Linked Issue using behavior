@@ -1,0 +1,30 @@
+1>Go to listener and click on create
+2>Name whatever you want
+3>Select the project – where you want to apply
+4>Event -> Issue commented
+5>Use below script
+
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.user.ApplicationUser;
+
+CommentManager commentMgr = ComponentAccessor.getCommentManager()
+ApplicationUser currentUser = ComponentAccessor.getJiraAuthenticationContext().loggedInUser
+
+def issue = event.issue
+
+def lastComment = commentMgr.getComments(issue).last().body
+
+def links = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId())
+
+def output = ""
+
+for(l in links){
+
+    output = output + l.issueLinkType.name + ": " + l.getDestinationObject()
+
+    commentMgr.create(l.getDestinationObject(),currentUser,lastComment, false)
+}
