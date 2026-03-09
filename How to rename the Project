@@ -1,0 +1,8 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.project.UpdateProjectParameters
+
+def projectManager = ComponentAccessor.getProjectManager()
+def project = projectManager.getProjectObjByName("Jira Testing 2026")
+def UpdateProjectParameters = UpdateProjectParameters.forProject(project.id).name("Jira Test 2026")
+
+projectManager.updateProject(UpdateProjectParameters)
