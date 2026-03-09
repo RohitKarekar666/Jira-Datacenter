@@ -1,0 +1,31 @@
+1>go to the workflow
+2>edit the workflow
+3>select the transition (on which you want to update the value)
+4>Click on Post Functions
+5>Add Post Function
+6> select Custom script post-function
+7>Provide the note and add the below script
+8>now click add and publish the workflow.
+
+/**
+* Post function to update the message field (Text field read only) with a custom message
+*This field can only be updated while importing or using code
+*refer to this link : https://community.atlassian.com/t5/jira-Core-questions/Text-Field-read-only/qaq-p/182646
+*video link:
+**/
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+import com.atlassian.jira.issue.ModifiedValue
+
+//get the value of message field
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def cField = customFieldManager.getCustomFieldObjectByName("Enterprise Issue ID")
+def cFieldValue = issue.getCustomFieldValue(cField)
+
+//Prepare the message with system field or custom message
+def message = "Issue status :" + issue.getStatus().name + "\n" + "Rohit Karekar"
+
+//update the value
+def changeHolder = new DefaultIssueChangeHolder()
+cField.updateValue(null, issue, new ModifiedValue(cFieldValue, message), changeHolder)
