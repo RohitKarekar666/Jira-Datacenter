@@ -1,0 +1,10 @@
+import com.atlassian.jira.component.ComponentAccessor
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+def permissionManager = ComponentAccessor.permissionManager
+
+permissionManager.getAllProjectPermissions().each { 
+    
+    log.error(it.getNameI18nKey() + " , " + it.getKey()) // it will display what are the permission and sub permission which we have in the permission scheme
+ }
