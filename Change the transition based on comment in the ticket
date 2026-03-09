@@ -1,0 +1,45 @@
+1>Go to script runner
+2>select listener
+3>click on create listener
+4>click on custom listener
+5>Give the name - Change the transition based on comment
+6>select the project – Jira Test 2026
+7>Event – Issue commented
+8>add the below script
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.issue.IssueEvent
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.comments.Comment
+// Event comes as IssueEvent
+IssueEvent issueEvent = event as IssueEvent
+Issue issue = issueEvent.issue
+Comment comment = issueEvent.getComment()
+// Ignore if no comment
+if (!comment) {
+    return
+}
+// Convert comment text → lowercase
+def body = comment.body?.toLowerCase() ?: ""
+if (!body.contains("pass")) {
+    return
+}
+// ---- Workflow transition ----
+// 1. Transition ID: replace with your real transition ID
+int transitionId = 31  // example only
+def issueService = ComponentAccessor.getIssueService()
+def user = comment.getAuthorApplicationUser()
+def inputParams = issueService.newIssueInputParameters()
+def validation = issueService.validateTransition(
+        user,
+        issue.id,
+        transitionId,
+        inputParams
+)
+if (validation.isValid()) {
+    issueService.transition(user, validation)
+    log.debug("Issue ${issue.key} transitioned due to 'pass' in comment.")
+} else {
+    log.warn("Transition failed: ${validation.errorCollection}")
+}
+9>Click on Add
+10>Now go to project and add the comment as Pass on any one ticket and check the ticket status – do refresh
