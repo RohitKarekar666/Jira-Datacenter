@@ -1,0 +1,58 @@
+//For outwards links
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.comments.Comment
+final String SOURCE = "CAT-2"   // <-- set your source issue key
+def issueManager   = ComponentAccessor.issueManager
+def commentManager = ComponentAccessor.commentManager
+def linkManager    = ComponentAccessor.issueLinkManager
+def src = issueManager.getIssueByCurrentKey(SOURCE)
+assert src : "Issue not found: $SOURCE"
+def comments     = commentManager.getComments(src).sort { it.created }   // keep order
+def outwardLinks = linkManager.getOutwardLinks(src.id) ?: []             // OUTWARD only
+outwardLinks.each { link ->
+    def dst = link.destinationObject
+    comments.each { Comment c ->
+        commentManager.create(
+            dst,
+            c.authorApplicationUser,          // author
+            c.updateAuthorApplicationUser,    // update author
+            c.body,
+            c.groupLevel,                     // group restriction (nullable)
+            c.roleLevelId,                    // role restriction (nullable)
+            c.created,                        // created
+            c.updated,                        // updated
+            false                             // no notifications
+        )
+    }
+}
+Log.deubg ("done")
+
+----------------------------------------------------------------------------------------------------------------------------------
+//For Inwards links
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.comments.Comment
+final String SOURCE = "CAT-2"   // <-- set your source issue key
+def issueManager   = ComponentAccessor.issueManager
+def commentManager = ComponentAccessor.commentManager
+def linkManager    = ComponentAccessor.issueLinkManager
+def src = issueManager.getIssueByCurrentKey(SOURCE)
+assert src : "Issue not found: $SOURCE"
+def comments    = commentManager.getComments(src).sort { it.created }   // keep order
+def inwardLinks = linkManager.getInwardLinks(src.id) ?: []              // INWARD only
+inwardLinks.each { link ->
+    def dst = link.sourceObject    // for inward links, the other side is the SOURCE of the link
+    comments.each { Comment c ->
+        commentManager.create(
+            dst,
+            c.authorApplicationUser,          // author
+            c.updateAuthorApplicationUser,    // update author
+            c.body,
+            c.groupLevel,                     // group restriction (nullable)
+            c.roleLevelId,                    // role restriction (nullable)
+            c.created,                        // created
+            c.updated,                        // updated
+            false                             // no notifications
+        )
+    }
+}
+log.debug("Done")
