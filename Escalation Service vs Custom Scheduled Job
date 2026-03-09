@@ -1,0 +1,51 @@
+//We are doing here when the user has not updated anything in the ticket for last 24 hours he should get the reminder.
+1>Go to Script Runner
+2>Click on Jobs
+3>Click on create Job
+4>Click on create custom jobs
+5>Name -> Notify stale issues (24h) – CAT
+6> User -> given user name
+7> Interval/Cron expression - > 0 30 0 ? * *
+8>Add the below script
+// ===== Config =====
+final String PROJECT_NAME = "Jira Testing 2026"  // <-- set your project NAME here
+final int STALE_HOURS = 24                       // "not updated in the last 24h"
+// ===== Imports =====
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.bc.issue.search.SearchService
+import com.atlassian.jira.issue.search.SearchResults
+import com.atlassian.jira.web.bean.PagerFilter
+import com.atlassian.jira.config.properties.APKeys
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.mail.Email
+import com.atlassian.mail.server.SMTPMailServer
+def searchService = ComponentAccessor.getComponent(SearchService)
+def issueManager  = ComponentAccessor.getIssueManager()
+def runUser       = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+SMTPMailServer mailServer = ComponentAccessor.mailServerManager.defaultSMTPMailServer
+assert mailServer : "No SMTP server configured (Admin → System → Outgoing Mail)."
+// Build JQL using PROJECT NAME (quotes handle spaces in the name)
+def jql = "project = \"${PROJECT_NAME}\" AND statusCategory != Done AND assignee IS NOT EMPTY AND updated <= -${STALE_HOURS}h"
+// Parse & run JQL
+def parsed = searchService.parseQuery(runUser, jql)
+assert parsed?.isValid() : "Invalid JQL: ${parsed?.errors}"
+
+SearchResults sr = searchService.search(runUser, parsed.query, PagerFilter.getUnlimitedFilter())
+// Email each issue's assignee
+def baseUrl = ComponentAccessor.applicationProperties.getString(APKeys.JIRA_BASEURL)
+sr.getResults().each { docIssue ->
+    Issue issue = issueManager.getIssueObject(docIssue.id)  // resolve to Issue
+    ApplicationUser assignee = issue?.assignee
+    def to = assignee?.emailAddress
+    if (!to) return
+    def email = new Email(to)
+    email.setSubject("Reminder: ${issue.key} hasn’t been updated in the past ${STALE_HOURS}h")
+    email.setBody("""Hello ${assignee.displayName},
+${issue.key} – ${issue.summary} hasn’t been updated in the past ${STALE_HOURS} hours.
+${baseUrl}/browse/${issue.key}
+""")
+    mailServer.send(email)
+}
+println "done"
+9>Click on ADD
