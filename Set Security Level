@@ -1,0 +1,10 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.type.EventDispatchOption
+
+def issue = ComponentAccessor.getIssueManager().getIssueObject("CAT-2")
+issue.setSecurityLevelId(11801)  // internal - 11801, Private - 12005, Public - 11404
+
+def user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def issueManager = ComponentAccessor.getIssueManager()
+
+issueManager.updateIssue(user,issue,EventDispatchOption.DO_NOT_DISPATCH,true)
