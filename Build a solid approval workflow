@@ -1,0 +1,43 @@
+1>Open the project
+2>Go to the workflow
+3>1st add the condition on which basis you want to enable the transition
+In my workflow I have add the condition on in progress transition
+4>select the transition
+5>click on condition and add condition
+6>select simple scripted conditions
+7>add the below script
+import com.atlassian.jira.issue.customfields.option.Option
+// 'cfValues' is provided by ScriptRunner in workflow conditions
+Option v = cfValues['Project approval'] as Option
+return v?.value?.equalsIgnoreCase('Yes')
+8>now in the in review status I have created a transition called Approve
+9>Now click on Approve transition and click on post function
+10>now click on add post function
+11>now select Custom script post function
+12>add the below script
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.event.type.EventDispatchOption
+import com.atlassian.jira.issue.customfields.option.Option
+def issue = issue as MutableIssue
+def cfm = ComponentAccessor.getCustomFieldManager()
+def cf = cfm.getCustomFieldObjectByName('Project approval')
+def optionsManager = ComponentAccessor.getOptionsManager()
+def config = cf.getRelevantConfig(issue)
+Option yesOption = optionsManager.getOptions(config).find { it.value == 'Yes' }
+issue.setCustomFieldValue(cf, yesOption)
+ComponentAccessor.getIssueManager().updateIssue(
+        ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(),
+        issue,
+        EventDispatchOption.DO_NOT_DISPATCH,
+        false)
+13>Now on the Approve transition we need to add the condition
+14>select the transition and click condition
+15>Add condition and select Custom script condition
+16>Add the below script
+import com.atlassian.jira.issue.customfields.option.Option
+// Provided by ScriptRunner in workflow conditions
+Option v = cfValues['Project approval'] as Option
+// When value is "Yes", return false ==> transition is hidden
+return !(v?.value?.equalsIgnoreCase('Yes'))
+17>now publish the workflow
