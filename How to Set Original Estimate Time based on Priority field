@@ -1,0 +1,29 @@
+1>Go to script runner
+2>Click on behaviour
+3>Click on create behaviour
+4>Give the behaviour Name
+5>Now click on create mapping
+6>now choose the project and issue type 
+7>click on add mapping
+8>Click on create
+9>now select the Priority field and click on add
+10>now enter the below script and save
+
+import com.atlassian.jira.issue.IssueConstantImpl
+
+def priority = getFieldById(getFieldChanged())
+def selectedPriority = ((IssueConstantImpl) priority.getValue()).getName()
+
+def timetracking = getFieldById("timetracking_originalestimate")  
+
+if (selectedPriority == "P1-Stopper") {
+    timetracking.setFormValue(["24h"]) 
+} else if (selectedPriority == "P2-High") {
+    timetracking.setFormValue(["3d"])
+} else if (selectedPriority == "P3-Medium") {
+    timetracking.setFormValue(["24d"])
+} else if (selectedPriority == "P4-Low") {
+    timetracking.setFormValue(["48d"])
+} else {
+    timetracking.setFormValue(["0h"]) 
+}
