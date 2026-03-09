@@ -1,0 +1,21 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def componentManager = ComponentAccessor.projectComponentManager.create("C++","C++ Work","rkarekax",1,155300)
+
+return componentManager.name
+
+//To create multiple Project components use the below code
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def projectId = 155300
+def cm = ComponentAccessor.projectComponentManager
+
+[
+ ['Frontend','Frontend Work','rkarekax',1],
+ ['Backend','Backend Work','rkarekax',1]
+].each {
+    cm.create(it[0] as String, it[1] as String, it[2] as String, (it[3] as Integer).intValue(), projectId as Long)
+}
+
+return "Done"
