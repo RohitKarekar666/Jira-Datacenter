@@ -1,0 +1,22 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+final String ISSUE_KEY = "CAT-2"   // <-- change to your issue key
+
+def issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(ISSUE_KEY)
+assert issue : "Issue not found: $ISSUE_KEY"
+
+// Values are in seconds; may be null
+Long originalEstimateSec = issue.getOriginalEstimate()   // same as timeoriginalestimate
+Long remainingEstimateSec = issue.getEstimate()          // same as timeestimate
+
+// below 3600 is nothing but sec = 1 hour
+def toHours = { Long secs -> secs == null ? null : (secs / 3600.0) }
+def fmt = { Double v -> v == null ? "—" : String.format("%.2f", v) }
+
+// Convert & print
+Double originalEstimateHours = toHours(originalEstimateSec)
+Double remainingEstimateHours = toHours(remainingEstimateSec)
+
+log.debug("Issue: ${issue.key}")
+log.debug("Original Estimate (h): ${fmt(originalEstimateHours)}")
+log.debug("Remaining Estimate (h): ${fmt(remainingEstimateHours)}")
