@@ -1,0 +1,29 @@
+//Do Not perform this activity as we are not authorized
+import  com.atlassian.jira.component.ComponentAccessor
+
+def userName = "user123"
+def groupNametoRemove = "Demo group"
+def userToRemove = ComponentAccessor.getUserManager().getUserByName(userName)
+def groupName = ComponentAccessor.getGroupManager().getGroup(groupNametoRemove)
+
+ComponentAccessor.userUtil.removeUserFromGroup(groupName, userToRemove) //till here also you can run the command to remove from the user to group
+
+//based on condition if you want to check the user is present or not or the group is present or not
+//or the user is already part of the group or not then remove the above command and run the below command
+
+if (!userToRemove) {
+    log.error("User doesn't exits")
+    return
+}
+
+if(ComponentAccessor.getGroupManager().getGroupsForUser(userName).contains(groupName)) {
+    log.error("User : $userToRemove.username not in the group: $groupName.name")
+    return
+}
+
+if(!groupName){
+    log.error("Group doesn't exist")
+}else {
+    ComponentAccessor.userUtil.removeUserFromGroup(groupName, userToRemove)
+    log.error("User: $userToRemove.username removed from the group: $groupName.name")
+}
