@@ -1,0 +1,214 @@
+Downloading and Installation of Jira Data Center
+Prerequisites Guide
+1>To download data Center go to the below link
+https://www.atlassian.com/software/jira/download/data-center
+2>Now click on check out our download archive
+3>Now I am downloading 10.3.8 
+Note : whenever you’re downloading any version choose long term support. These are designated feature releases that will continue to receive backported security updates and critical bug fixes throughout the standard 2-year support window. This allows you to get the maximum value from our continuous product development without strictly keeping up with the frequent release cadence.
+4>Now go to below site to check supported platforms
+https://confluence.atlassian.com/adminjiraserver103/supported-platforms-1489806894.html
+5>Now select the version which your downloading
+6>You have to download and install these supported software in your system before installing Jira
+•	JAVA - Oracle JRE/JDK - JDK 17
+•	Database -  PostgreSQL 15 and Microsoft SQL Server 2022 
+•	PGpoll-II
+7>Now click on download
+8>now choose the operating system
+9>click on agree and submit
+
+Installing JAVA
+Whenever your download JAVA please choose .exe file and when you click on download it will ask you to login to oracle.com if you don’t have sign in then just create a new account and sign in and download.
+1>Go to the below URL
+https://www.oracle.com/in/java/technologies/downloads/
+2>Select the version as per the Jira support
+3>Download .exe file and install in the system
+4>Now go to command prompt and type this command to check java is installed
+Java -version
+5>If you type javac it will provide all the commands if it is not providing then follow below steps.
+5>Now set the JAVA path in the system variable
+6>go to settings->System->about
+7>now click on advance system settings
+8>click on advance and click on environment variables
+9>select path and click on edit
+10>Click on new and type the path : C:\Program Files\Java\latest\jdk-25\bin
+11>click on okay
+
+Installing PostgreSQL
+1>Go to the below URL
+https://www.postgresql.org/download/
+2>Select the Operating system
+3>Now click on download the installer
+4>Now download the supported version
+5>Now select the download file
+6>click on right click and select administrator
+7>Click on Yes
+8>now click on next next next
+9>enter the password
+Note : user name(superuser) will be by default (postgres)
+10>now click on next next next
+11>Now give the check mark and click on Finish.
+12>Now new installation window will open stack builder
+13>Now select the postgres from the drop down and click on next
+14>Now select if you want to install any add-ons or any driver and click on next and finish.
+15>To open go to search and type pgadmin4
+16>enter the password and click on okay.
+
+Installing PGpool-II
+1>Go to the below URL
+https://pgpool.net/mediawiki/index.php/Downloads
+2>As per postgres version select the compatible version and download
+3>Now to install this download WSL
+https://ubuntu.com/desktop/wsl
+4>now install this
+5>now open WSL
+6>type below commands
+•	Go to the directory
+o	cd /path/to/downloaded/file
+•	Extract it
+o	tar -xzf pgpool-II-4.5.3.tar.gz
+•	Install dependencies (ONE TIME, may go online)
+o	cd pgpool-II-4.5.3
+•	After this step, Pgpool itself will be installed ONLY from your local files
+•	Configure using your local PostgreSQL
+o	./configure
+•	If PostgreSQL is in a custom path:
+o	./configure --with-pgsql=/usr/lib/postgres
+•	Build and install
+o	make
+o	sudo make install
+•	Verify
+o	pgpool --version
+
+Installation on Jira
+1>Now go to download location where you have downloaded Jira
+2>Right click on application and run as administrator
+3>Click on Yes
+4>now click on Next
+5>now choose custom install
+6>Now click on next 		#here the jira application will get installed
+7>now click on next		#attachement,XML backup, plugin and indexes will stored
+8>Now click on next
+9>Use default ports		#if you want you can change but port number will be only 4
+HTTP: 8080, Control: 8005
+10>Click on Next
+11>Click Yes for install service
+12>Now click on install
+13>Now give check mark on Start Jira Software and click on next
+14>Now give check mark on Launch Jira Software and click on finish
+15>now open browser
+16>localhost:8080
+If the service is start or not to check
+•	press windows
+•	type services
+•	Atlassian Jira will be running
+
+We can open like below
+Localhost:8080
+127.0.0.1:8080
+
+If it is present on different server then server ip address and port number
+123.168.3.43:8080
+
+
+We can also call with name
+Jira.airbnb.com:8080
+
+For this follow below steps
+•	C:\Windows\System32\drivers\etc
+•	Now right click on hosts file and open with notepad
+•	Under localhost name resolution is handled within DNS itself
+•	Type below
+•	127.0.0.1	jira.airbnb.com	#dont change the existing one type this below separately
+•	Now save this and close
+
+If you want to remove the port number, then we need to install SSL Certification
+
+Now the jira is running as http it is not secure if you want to run as secure you need to use https
+
+17>now give full permission to Atlassian folder where the jira is install
+•	Now go to c:\\program files\
+•	Select Atlassian and right click
+•	Click on properties
+•	Now click on security
+•	Select the user and click on edit
+•	Select again users
+•	Give check mark on full control and modify
+•	Click on apply and ok
+•	Click on ok
+
+If you do these below you need to keep the window open, you should not close
+Start-jira -> start the jira service 	
+Startup ->all the changes will updated and start
+Stop-jira -> stop the jira service
+Shutdown -> it will close everything
+
+But you’re starting and stopping the Jira from the services it will not close
+
+18>now select I will set it up myself and click on next
+
+Built-in Database: For small, non-production standalone instances, Jira used to come with a built-in H2 or HSQL database, but for production environments, an external, robust database is mandatory.
+
+19>now in database connection select my own database
+20>now select database type : PostgreSQL
+21>Hostname: Localhost or you can give Ip address 127.0.0.1
+22>Port : 8080
+23>Database : postgres – in the pgadmin4 under database you will see the database name
+24>username: postgres – it is a super user
+25>password: xxxxx – which we have enter in pgadmin4 use that
+26>scheme: public – in pgadmin4 under database you will see the scheme under that you will see the name of scheme
+27>now click on test connection
+28>now click on next
+29>Now application title : Jira- Prod you can give anything
+30>mode : Public 
+31>base URL : http://localhost:8080
+32>click on next
+33>now enter the license
+If you have or open the generate a jira trial license in new tab
+•	Select the product as Jira Software
+•	Select Jira software (Data Center)
+•	Organization : You can type anything you want 
+•	Your instance is select not in install
+•	Server ID you will se in the previous tab where it asked you to enter license
+•	Now click on generate a license
+•	Now click on copy and paste it in license window
+Note : this license is valid for 30 days for unlimited users
+33>now click on next
+
+Cloud we have billing cycle is monthly and annually
+•	Free – Upto 10 users for lifetime
+•	Standard
+•	Premium
+•	Enterprise
+Dc we have billing cycle is 12 months/24months
+•	Evalution – Free is for 30 days unlimited users
+•	Enterprise
+•	Academic – 50% discount on enterprise
+
+Purchase the license
+https://www.atlassian.com/purchase/product/jira-software.data-center
+
+34>now enter the super user account – whenever anything happens you can login with super user account
+•	Full name : administrator
+•	Email address : admin@gmail.com
+•	Username : Admin
+•	Password : xxxxx
+35>click on next
+36>Now Configure Email notification later
+37>click on Finish
+38>Now select the Language as English
+39>now click on continue
+40>now choose avatar and click on next
+41>Now create new project
+42>Now select basic software development and click on next
+43>Now click on select
+44>now enter the project name and key and click on submit
+
+Before
+Bug Tracking -> Jira Core
+Project management tool -> Jira Agile
+Help Desk tool -> Jira Service Desk
+Now
+Jira Software = Jira core + Jira Agile 
+Jira Service Management = Jira Core + Service Desk
+ 
+Both software and service management licenses are different need to buy separately. If you buy software service management will not work, wise versa.
