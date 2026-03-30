@@ -1,0 +1,198 @@
+Database Migration Process
+Production Jira
+ |
+ |--- XML Backup (issues, users, config)
+ |--- Jira Home Backup (attachments, avatars)
+ |
+ Pre Production Jira 
+| 
+|--- Empty PostgreSQL DB 
+|--- Restore XML 
+|--- Restore Attachments 
+|--- Re Index
+
+Step 1: Preparation
+Validate Versions & Apps
+On both Prod and Pre Prod:
+•	Jira version → MUST match exactly
+•	All Marketplace apps → Same versions
+•	PostgreSQL version → Compatible
+
+Steps 2: Need to Freez these activity in Production if they are impaction production
+1>Disable Webhooks
+•	Go to administrator ->System
+•	Click webhooks
+•	Click each webhooks and disable
+2>Disabling script runner activities
+•	Go to administrator –> Manage apps ->Script runner
+•	Check and disable
+o	Scheduled Jobs
+o	Listeners
+o	Custom REST endpoints
+Note : Any jobs that’s create issues, sync data and calls external APIs
+3>Disabling Jira Automation Rules
+•	Go to administrator -> System -> Automation
+•	Disable rules with
+o	Incoming webhooks
+o	Create issue
+o	Sync external systems
+
+4>Removing global permissions
+•	Go to Administrator->System->Global permissions
+•	Remove integration user/group from:
+o	Create issues
+o	Edit issues
+
+Step 3: Production / Pre-production Backup
+Full Jira XML Backup (MANDATORY)
+Follow the same steps in production also in the pre-production
+•	Login to Jira
+•	Go to Administrator -> System ->System backup
+•	Enter File name : prod_full_backup_2026_03_30
+•	Give check mark on include attachments
+•	Click backup
+Backup location : <JIRA_HOME>/export/backups/
+Note your taking backup for both prod and preprod
+
+Stop jira service on before copying
+$ stop-jira.sh
+
+Even if attachments are included, Data Center requires manual copy.
+•	<JIRA_HOME>/data/attachments
+•	<JIRA_HOME>/data/avatars
+•	<JIRA_HOME>/data/icons
+•	<JIRA_HOME>/data/plugins
+How to copy the above file into a backup folder
+cp -R attachments/ 	<JIRA_HOME>/Export/backup/
+cp -R avatars/     <JIRA_HOME>/Export/backup/
+cp -R icons/       <JIRA_HOME>/Export/backup/
+cp -R plugins/     <JIRA_HOME>/Export/backup/
+
+Now start the Jira service after the copying is completed
+$ start-jira.sh
+
+Prepare Pre Production Database (PostgreSQL) Empty before restoring
+•	Stop ALL Jira Pre Prod Nodes
+•	Now login to PostgreSQL of Pre-Production
+•	Login with super user
+•	Now Run the JQL
+-- Login as postgres user
+psql -U postgres
+
+DROP DATABASE jirapreprod;
+CREATE DATABASE jirapreprod
+  WITH OWNER=jirauser
+  ENCODING='UTF8'
+  LC_COLLATE='C'
+  LC_CTYPE='C'
+  TEMPLATE=template0;
+
+Restoring Production XML Backup file in the pre-production
+
+•	Now you need to start 1 jira node of pre-production.
+•	If you have multiple nodes then let it be jira service is stopped for remaining nodes.
+•	Now to start the 1 pre-production node
+•	Open terminal and run the below command.
+$ start-jira.sh
+•	Now login to Jira from any browser
+•	Go to Administrator->System->Restore system
+•	Now select the path of production xml backfile
+•	Choose outgoing email disable
+•	Now click on restore
+
+Restoring Jira Production Data
+Now go to production Jira server node and open terminal and run the below command
+rsync -avz \
+/var/atlassian/application-data/jira/data/attachments \
+jira@preprod-server:/var/atlassian/application-data/jira/data/
+
+rsync -avz \
+/var/atlassian/application-data/jira/data/avatars \
+jira@preprod-server:/var/atlassian/application-data/jira/data/
+
+rsync -avz \
+/var/atlassian/application-data/jira/data/icons \
+jira@preprod-server:/var/atlassian/application-data/jira/data/
+
+rsync -avz \
+/var/atlassian/application-data/jira/data/plugins \
+jira@preprod-server:/var/atlassian/application-data/jira/data/
+
+
+or
+
+cp -R attachments/ <PREPROD_JIRA_HOME>/data/
+cp -R avatars/     <PREPROD_JIRA_HOME>/data/
+cp -R icons/       <PREPROD_JIRA_HOME>/data/
+cp -R plugins/     <PREPROD_JIRA_HOME>/data/
+
+Once the file is copied in the pre-production fix the permissions 
+chown -R jira:jira /var/atlassian/application-data/jira
+chmod -R 750 /var/atlassian/application-data/jira
+
+Now start all the jira nodes
+$ start-jira.sh
+
+Full Re Index (REQUIRED) on pre-production
+Administration → System → Indexing → Full Re index
+Note : Restore will not complete without re indexing. 
+Disable Email Notifications (IMPORTANT)
+Always make sure the email notifications is disabled for pre-production
+If not please follow the below steps
+•	Log in to Jira Pre Production as System Admin 
+•	Go to -> Administration → System 
+•	Click Outgoing Mail 
+•	You will see your SMTP server 
+•	Click Disable 
+•	Save
+
+Now Update Environment Specific Settings
+•	Go to Jira Administrator ->System->General setting
+•	Click on edit setting
+•	Title change it to : Jira Pre-Production
+•	Base URL change it to : https://jira-preprod.company.com
+•	Now go down and click on update
+
+Check these below settings:
+•	LDAP / SSO endpoints
+•	Webhooks
+•	CI/CD integrations
+•	OAuth/API tokens
+
+Final Validation Checklist 
+Verify:
+•	Projects list 
+•	Issues & comments 
+•	Attachments download 
+•	Boards & dashboards 
+•	User login 
+•	Permissions 
+
+Setting up announcement banner
+
+Make sure before making pre-production refresh you need to update banner on both environments so user can be aware of this activity.
+
+To set Follow the below steps
+•	Login to Jira
+•	Click on Jira Administrator -> System
+•	Under user interface 
+•	Click on announcement banner
+•	Paste the below code
+<div style="background-color:#fff3cd; padding:10px; border:1px solid #ffeeba;">
+  <b style="color:#b30000;">
+    ⚠️ PRE PRODUCTION REFRESH IN PROGRESS ⚠️
+  </b>
+  <br/><br/>
+  This Jira <b>Pre Production</b> environment is undergoing a refresh.<br/>
+  Data may change or be unavailable.
+  <br/><br/>
+  <b>⏰ Maintenance window:</b><br/>
+  30 Mar 2026 | 18:00 – 22:00 IST
+  <br/><br/>
+  <b>Please do not use this environment during this period.</b>
+</div>
+•	Visibility set it as Public
+•	Now click on set banner.
+•	Once the above activity done make sure to remove this banner.
+
+
