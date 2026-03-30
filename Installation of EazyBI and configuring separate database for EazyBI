@@ -1,0 +1,186 @@
+How to install add-ons in Jira step by step
+EazyBI Installation
+High level architecture
+Users (Browser) -> Jira Data Center (4 nodes) -> eazyBI app (plugin) -> eazyBI Database (External DB – Recommended)
+•	eazyBI does NOT use the Jira database
+•	eazyBI maintains its own analytics database (OLAP)
+•	This protects Jira performance and stability [docs.eazybi.com]
+
+Supported Databases for eazyBI (Data Center)
+eazyBI requires a dedicated database. Supported options include: [docs.eazybi.com]
+•	PostgreSQL 10–17 (recommended)
+•	MySQL 8.x
+•	Microsoft SQL Server 2016+
+•	Oracle 12c R2+
+PostgreSQL is most commonly used in Jira DC environments
+
+IMPORTANT DESIGN RULES (Do Not Skip)
+•	Do NOT store eazyBI data in Jira’s DB
+•	Use a separate external database
+•	Same eazyBI DB is shared by all 4 Jira nodes
+•	Use a DB user dedicated to eazyBI
+o	Database
+o	User/schema
+
+PREPARE THE EAZYBI DATABASE
+•	DOWNLOAD & INSTALL POSTGRESQL ON WINDOWS
+•	Go to https://www.postgresql.org/download/windows/
+•	Click on download the installer
+•	Choose version 15 and download (as our jira current version support version 15)
+•	Now right click on downloaded file and run as administrator
+•	Installation Directory
+C:\Program Files\PostgreSQL\15
+•	Data Directory
+C:\PostgreSQL\data
+•	Components (select all):
+o	PostgreSQL Server 
+o	pgAdmin 4 
+o	Command Line Tools
+•	Set PostgreSQL Superuser Password
+You will be asked to set a password for user postgres.
+o	Choose a strong password
+o	Save it securely
+o	This is used only for DB admin tasks
+•	Port Configuration
+Use default:	Port: 5432
+Make sure port 5432 is allowed through firewall.
+•	Locale : Default
+•	Proceed and complete installation.
+•	PostgreSQL service will start automatically
+
+FIREWALL & NETWORK CONFIGURATION
+•	Go to windows
+•	Now search windows Defender Firewall
+•	Now click on advance settings
+•	Now click on inbound rule
+•	Now click on New Rule
+•	Now select port and click on next
+•	Now select TCP
+•	Specify the local ports : 5432
+•	Now click on next
+•	Now select allow the connection and click on next
+•	Now only check Domain and Private and click on next
+•	Now type the name as PostgreSQL 5432
+•	Now click on finish
+
+CONFIGURE POSTGRESQL FOR REMOTE ACCESS
+By default, PostgreSQL allows local connections only.
+To Edit postgresql.conf follow the below steps
+•	Go to C:\PostgreSQL\data\postgresql.conf
+•	Right click and open in notepad
+•	Find and change:
+listen_addresses = '*'
+•	Now save the file and exit
+•	It will allow remote connections
+
+To Allow Jira node to connect  PostgreSQL Edit pg_hba.conf file
+•	Go to C:\PostgreSQL\data\pg_hba.conf
+•	Right click and open the file in notepad
+•	# Allow Jira nodes to connect
+host    all    all    <JIRA_SUBNET>/24    md5
+example : host    all    all    10.10.20.0/24    md5
+•	Replace subnet with your Jira servers’ network
+
+Now Restart PostgreSQL Service
+•	Now click windows
+•	Type services
+•	Restart PostgreSQL 15
+
+CREATE DATABASE AND USER FOR EAZYBI
+•	Now open pgAdmin 4
+•	Connect to server: 
+•	Host: localhost
+•	User: postgres (Super User set earlier while installing postgres)
+•	Password: (password set earlier while installing postgres)
+•	Now click on Query toll and type below queries
+o	CREATE USER eazybi_user WITH PASSWORD 'StrongPassword123!';
+o	CREATE DATABASE eazybi WITH OWNER = eazybi_user ENCODING = 'UTF8';
+o	GRANT ALL PRIVILEGES ON DATABASE eazybi TO eazybi_user;
+•	Now Run the Query
+
+Note : 
+•	Use a strong password
+•	Do not reuse Jira DB credentials
+•	UTF 8 is mandatory for eazyBI
+•	Ensures eazyBI can create schemas and tables by providing privileges
+
+Now validate the connection from the JIRA
+Before configuring eazyBI, test connectivity from a Jira node.
+•	Now come to JIRA Server
+•	Open Telnet or powershell
+•	Type the below command
+o	Test-NetConnection dbserver.company.com -Port 5432 
+•	Should return TcpTestSucceeded : True
+
+INSTALL EAZYBI APP IN JIRA DC
+•	Log in as Jira System Admin
+•	Navigate to:
+•	Administration → Manage apps
+•	Click Find new apps
+•	Search for EazyBI for Jira
+•	Install the app
+•	Data Center installs it cluster wide automatically.  Means it will get installed automatically on all the nodes.
+•	After install, Jira will start eazyBI as part of the Jira JVM 
+•	First startup may take a few minutes
+•	You can verify startup in:
+o	<JIRA_HOME>/log/atlassian-jira.log
+
+Configure Database Connection
+•	Now open Jira
+•	Click on EazyBI
+•	Click on settings in EazyBI
+•	Now in the general Tab
+•	Database Type : PostgreSQL
+•	Host : IP address of PostgreSQL which was created for EazyBI
+•	Port : 5432
+•	Database : eazybi
+•	Username : eazybi_user
+•	Password : password which you use to create eazybi_user account
+•	Encoding : UTF 8
+•	Give Check mark on SSL
+•	Dedicate node : Select the node which you created for PostgreSQL
+•	Child process
+o	Port : 3801
+o	JVM Options:   -Xms2g  -Xmx4g
+•	Now in the advance settings
+•	Search [source_application] and add
+min_regular_import_frequency = "1 day"
+cancel_orphan_jobs_interval = "3 hours"
+•	If you want to change anything just refer this document
+https://docs.eazybi.com/eazybi/set-up-and-administer/atlassian-data-center/advanced-settings
+•	Now click on save configuration
+•	Now in the restart jira
+
+CREATE EAZYBI ACCOUNT & IMPORT DATA
+•	Go to: Apps → eazyBI 
+•	Click Create new account 
+•	Select: 
+o	Source: Jira
+o	Projects: Select required projects
+
+Initial Data Import
+•	Inside eazyBI account → Source Data
+•	Click Import
+•	First import: 
+o	Can take time (depends on Jira size)
+o	Loads history, fields, workflows, transitions
+•	Data is stored in OLAP cubes inside the external database.
+
+HOW DATA IS STORED (IMPORTANT FOR AUDIT)
+What eazyBI Stores
+•	Issues & history snapshots
+•	 Measures (time, effort, counts)
+•	 Dimensions (Projects, Users, Status, Time, etc.)
+•	 Custom fields (if enabled)
+
+What eazyBI Does NOT Store
+•	Jira credentials
+•	User passwords
+•	Realtime transactional data
+Data is read only pulled from Jira through APIs, then transformed into analytical structures.
+Note : Above we have selected port and JVM
+Port
+The child process will listen on this TCP/IP port for requests from the eazyBI plugin. By default, port number 3801 is suggested. If you run several Jira instances with the eazyBI plugin on the same server, then specify a different port number in each instance.
+JVM options
+Additional JVM options that you want to use for the child JVM process. By default, the following options are used: -Xms2g (initial JVM heap size 2GB). However, we recommend using at least 4GB: -Xmx4g (set max JVM heap size to 4GB) for a production environment. Many out of memory errors in logs might indicate insufficient memory.
+
