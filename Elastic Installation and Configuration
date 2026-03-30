@@ -1,0 +1,428 @@
+ELK (Elastic Stack)
+Why Continuous Monitoring?
+Continuous Monitoring is an important part of software development. It is something we take up as measure to maintain the health of a software and to improve the quality of the software, and this is based on the feedback we get from the insights grained from monitoring.
+
+Types of Monitoring
+•	System Performance – System performance refers to the speed, efficiency, and resource utilization of a computer system, measured by metrics like responsiveness, throughput, and latency. It is determined by hardware (CPU, RAM, storage) and software optimization. Key ways to improve it include monitoring resources, removing startup apps, clearing disk space, and updating drivers
+•	Process monitoring – Specific process how it is getting handled, process are running or not, how is the health status of processes
+•	Integration – Integration monitoring is the proactive process of tracking, analysing, and managing the health, performance, and data integrity of connections between software applications.
+•	Application Performance – the practice of tracking software application metrics—such as response times, error rates, and resource utilization—to ensure optimal performance and user experience. It enables teams to proactively detect, diagnose, and resolve technical issues using transaction tracing, log analysis, and real-time alerts to reduce downtime
+•	Business Monitoring – It is used to monitor business improvement like customer data, which customer is interested in which product based on that it will provide the adds to the customer. It is basically monitoring the customer activity. Also, it will track the record of your selling and buying history so this will help you how much profit and loss you have met.
+Few example for Monitoring Tools
+•	ELK
+•	Nagios
+•	Prometheus
+•	Grafana
+•	Amazon Cloud watch
+•	Splunk
+
+What is ELK Stack?
+ELK stack is a set of open-source tools that allow us to monitor, collect, process analyse & visualize data, this data can be of different types and formats and from almost any source. It was developed by Elastic co. iteratively. They started with Elastic search and kept on adding more tools to the stack. The primary purpose of ELK stack is log management.
+
+ELK Features
+•	System & Application Performance
+•	Logging
+•	Stack Security & Alerting
+•	Scalability & Resiliency
+•	Dashboards & Visualisations
+
+ELK Stack Tools
+Logstash is an open-source, server-side data processing pipeline that ingests data from diverse sources simultaneously, transforms it on the fly, and sends it to a "stash" like Elasticsearch
+Filebeat is a lightweight, open-source log shipper and centralizer for the Elastic Stack, designed to monitor, collect, and forward log files to Elasticsearch or Logstash. It runs as a persistent agent, efficiently handling large data volumes, and can be deployed in containers (Docker, Kubernetes) or on servers
+Elasticsearch is a distributed, open-source search and analytics engine based on Apache Lucene, designed for speed and scalability. It stores data as schema-free JSON documents, enabling fast full-text search, structured queries, and analytics, often used for log monitoring, security analytics, and AI
+Kibana is a powerful, open-source data visualization and exploration tool designed for Elasticsearch. It serves as the visualization layer of the Elastic Stack (ELK Stack), allowing users to analyse, visualize, and build interactive dashboards on top of data stored in Elasticsearch indices, including logs, metrics, and security data.
+X-Pack is an Elastic Stack extension that bundles security, alerting, monitoring, reporting, and graph capabilities.
+ServerData collectionFileBeatBuffe Logstash(Filtering & Processing)Elasticsearch(Indexing & Storing)Kibana(Analysis & Visualisation)
+To Install ELK follow the below steps
+•	Download all the below files
+o	https://www.elastic.co/downloads/elasticsearch
+o	https://www.elastic.co/downloads/beats/filebeat
+o	https://www.elastic.co/downloads/logstash
+o	https://www.elastic.co/downloads/kibana
+•	If you’re in windows, then install it one by one.
+•	In you’re into other platform like Linux then follow the below steps
+o	Download all the file like above but choose Linux while downloading
+o	Now open the terminal and run these command one by one
+o	Sudo apt -get update
+o	Sudo apt -get install -y openjdk-8-jdk
+o	Sudo apt -get update
+o	Sudo apt -get -y install nginx
+o	Wget -q0 – http://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt -key add –
+o	Echo “deb https://artifacts.elastic.co/packages/7.x/apt stable main” | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+o	Sudo apt update
+o	Sudo apt install elasticsearch
+o	Sudo apt install kibana
+o	Sudo apt install logstash
+o	sudo apt install filebeat
+•	Now to activate the elasticsearch use the below command
+o	Sudo nano /etc/elasticsearch/elasticsearch.yml
+o	Now uncomment the below text from the file
+o	Cluster.name: my-application
+o	Node.name: node-1
+o	Path.data: /var/lib/elasticsearch
+o	Path.logs: /var/log/elasticsearch
+o	Network.host: localhost #remove the ip address and type localhost
+o	http.port: 9200
+o	now press ctrl + o enter
+o	now press ctrl + X
+o	sudo systemctl start elasticsearch  #to start the service
+o	sudo systemctl status elasticsearch #to check the service is enable or not
+o	curl localhost:9200
+
+•	Now to activate kibana use the below command
+o	Sudo nano /etc/kibana/kibana.yml
+o	Now uncomment the below text from the file
+o	Server.pot: 5601
+o	Server.host: “localhost”
+o	Now press ctrl+ O enter
+o	Now press ctrl + X
+o	Systemctl status kibana
+o	Sudo systemctl start kibana
+o	sudo systemctl status kibana
+•	Sudo apt install apache2-utils and click on Yes
+•	Sudo htpasswd -c /etc/nginx/htpasswd.users kibana
+•	Now enter the new password
+Now we are moving the nginx configuration files to another folder
+•	Sudo mv /etc/nginx/sites-available/default 	/etc/nginx/sites-available/new-default
+Now we are adding the new configuration file into default nginx location
+•	Sudo nano /etc/nginx/sites-available/default
+•	Type the below script
+Server {
+	Listen 80;
+	Server_name	 3.131.91.105;	#type your ip address
+	Auth_basic “Restricted Access”;
+	Auth_basic_user_file /etc/nginx/htpasswd.users;
+	Location / {
+		Proxy_pass http://localhost:5601;
+		Proxy_http_version 1.1;
+		Proxy_set_header upgrade $http_upgrade;
+		Proxy_set_header Connection ‘upgrade’;
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		}
+	}
+•	Sudo systemctl restart nginx
+•	Now go to browser and enter your password
+•	It will load the elastic
+•	Now go to home
+•	Now click on try on sample data
+Now we are testing the sample data in the elastic
+•	Click add on sample web logs
+•	Click to 3dot and select dashboard
+•	Now that sample web logs traffic will show click on that
+•	Now you can see different types of visualization and graphs
+
+Now if you want to collect the real time data and want to visualize
+•	Now from the filebeat we are going to collect the data
+•	Sudo filebeat modules list 	#it will display all the filebeat commands
+•	Sudo filebeat modules enable system
+•	Sudo filebeat modules list # now you can see the system with enable option in the list
+•	Sudo filebeat modules enable apache
+•	Sudo filebeat modules list # now you can see the system with enable option in the list
+•	Sudo nano /etc/filebeat/module.d/system.yml
+•	Now in the module:system type
+#Syslog
+	Syslog:
+	Enabled: true
+	var.paths: [“/var/log/syslog*”]
+
+	#Authorization logs
+	Auth:
+	enabled: true
+	var.paths: [“/var/log/auth.log*”]
+Now save the file. Press Ctrl + O and Ctrl +X
+•	Sudo systemctl restart filebeat
+•	Sudo systemctl status filebeat
+•	Now click on 3dot
+•	Now scroll down and go to management section
+•	Now click on stack management
+•	Now click on index management in data section
+•	Now go to kibana and click on index patterns
+•	Now type filebeat* (it will display all the related files)
+•	Now select the file and click on next step
+•	Now select @timestamp
+•	Now click on create index pattern
+
+
+Now to create Visualization for the index pattern which you have created.
+•	Now click on 3 dot
+•	Now click on visualize
+•	Now we are not selecting any pre-defined visualizations
+•	So we are clicking create visualizations
+•	Select pie chart
+•	And now select the filebeat which your have selected earlier
+•	Now you can change the visualization
+•	In the right side click on options
+•	Uncheck the donut
+•	Show labels and click on update
+•	Now click on save and give the name and click on save
+
+Now to create dashboard for the index pattern which you have created
+•	Now click on 3 dot
+•	Now click on dashboard
+•	Now in the top click on dashboard so it will take you to dashboard create page
+•	Click on create dashboard
+•	Now click on create new in the add an existing or new dashboard
+•	Now cl	ick on add an existing
+•	Now select the visualization which you have created above
+•	Now click on save the dashboard
+•	Give the name and click on save.
+
+Now to download default dashboard in the elastic
+•	Open the terminal
+•	Type sudo filebeat setup -e
+•	Now come to elastic
+•	Click on 3dot and select dashboard
+•	It will show list of dashboard related to filebeat.
+•	Now search system
+•	And select any one of system dashboard
+•	It will display all the details with dashboard.
+
+Configuration the same thing on our server to get Jira logs
+1. ECK Environment and capacity.
+
+ECK URL	https://jira-admin.eck2kb.google.com/app/kibana_overview#/
+
+ECK Server capacity	4 Data Nodes :
+3 Master Nodes
+1 Kibana Node
+
+16GB Memory on each node
+2 vCPU on each node
+
+Logstash Server	:  abc1def08
+
+filebeat agents	:
+abc1defdc01
+abc1defdc02
+abc1defdc03
+abc1defdc04
+abc1defdc05
+abc1defdc06
+abc1defdc07
+
+2. Logstash Installation
+a.	Login to Server using PuTTY using your AD Credentials
+b.	Go to the ELK_install folder.
+
+cd tmp/ELK_install
+•	Use Zypper package manager and run the following command:
+
+zypper install logstash-6.7.2.rpm
+•	Check the status of Logstash service using the following command:
+ 
+systemctl status logstash.service
+•	Make changes in the logstash.service file - Change User & Group to root. ---create a logstash user
+ 
+vim /etc/systemd/system/logstash.service
+•	Use VI editor & make change in the plcs-jira.conf file.
+ 
+Open vi plcs-jira.conf
+Vi /etc/logstash/conf.d/plcs-jira.conf (Change Host, user & password)
+•	Make a copy of logstash.yml file.
+
+cp logstash.yml logstash.yml.original (Backup)
+•	Make the below mentioned Changes in logstash.yml
+vi logstash.yml
+Uncomment loglevel: info
+Change it to loglevel: debug
+Pipeline.id: plcs-jira
+Pipeline.workers:1
+(Save the file)
+ 
+•	Use VI editor & make change in the pipeline.yml file.
+ 
+Vi pipeline.yml
+Pipeline.id: plcs-jira
+Pathconfig: "etc/logstash/conf.d/plcs-jira.conf"
+queue.type: persisted
+pipeline.workers: 1
+pipeline.batch.size: 1000  --unit
+ (Save the file)
+ 
+•	Copy the SSL Certificate to Logstash Folder using the below command:
+ 
+cp/tmp/ELK_install/intelchain.pem /usr/share/logstash/ -----/mnt/jdc/tmp/physical/logstash
+ 
+•	Now Start Logstash using the below command:
+ 
+Systemctl start logstash.service
+ 
+a.	To Check logs use the below command:
+b.	Tail -f /var/log/logstash/logstash-plain.log //LOGS
+
+3.  Mv ./conf.d//access_logs. Sincedb . ------???
+
+Filebeat Installation
+ 
+Login to Server using PuTTY using your AD Credentials : abc1jdc01.ed.cps.google.com
+
+•	Open Command Prompt and go to the following directory:
+cd /mnt/jdc/tmp mnt/jdc/tmp/physical
+ 
+•	Use the below command to run Filebeat installation file:
+Sudo rpm -vi filebeat-6.7.2-x86_64.rpm
+ 
+•	Now go to the filebeat directory:
+cd /etc/filebeat/
+ 
+•	Make a copy of filebeat.yml file
+Cp filebeat.yml filebeat.yml.original (Backup)
+ 
+•	Open VI Editor and Make change in filebeat.yml parameters:
+
+HF==>Logstash server==>HFJIRAMMVM01
+
+FM==>Logstash server==>abc1jdc08
+
+4. Steps to load unhealth indexes from ECK
+a.	Go to devtools from top menu
+b. type command GET _cat/indices?health=yellow and run
+c. results will display left side
+d. if you should delete them then use below command to delete one by one
+e. DELETE /<index_name>
+
+Vi filebeat.yml
+Set enabled:true
+Paths: /opt/atlassian/jira/logs/access_log.*
+ 
+Set Reload.enabled: true
+Delete Setup.kibana //line
+Delete output.elasticsearch //line
+ 
+Uncomment output.logstash;
+Uncomment & change the host to hosts: [abc1jdc08.ed.cps.google.com:5044]
+(Save the file)
+ 
+•	Start Filebeat service using below command:
+ 
+Service filebeat start
+•	To Check logs:
+
+Tail -f /var/ log/filebeat/filebeat
+•	Repeat the following process to install filebeat on rest of the nodes.
+
+
+If you want to see user history on when he has done the api calls / log
+•	Login to ELK
+•	Click on 3 dot
+•	Click on discover
+•	In data view select prod-accesslog-*
+•	And in the filter search type the user idsid and click on enter
+•	Now click on calendar and select the timing
+•	It will display all the logs
+
+
+Method 2
+Option 1: Jira Data Center / Server (Self managed)
+This is the most common and recommended setup because you have access to Jira logs.
+
+Step 1: Enable detailed REST API logging in Jira
+Jira uses Log4j for application logs.
+1.1 Enable REST logging from Jira UI (recommended)
+1.	Go to
+Jira Admin → System → Logging and Profiling
+2.	Add a new logger:
+
+Field          	Value
+Package name	  com.atlassian.jira.rest
+Log level      	DEBUG
+
+(Optional but useful)
+•	com.atlassian.plugins.rest
+•	com.atlassian.jira.web.filters.accesslog
+
+✅ This will log:
+•	REST endpoint
+•	HTTP method
+•	Response status
+•	Execution time
+•	Authenticated user (when available)
+
+1.2 (Optional) Enable Access Logs for HTTP details
+For full HTTP request/response visibility (URL, IP, status, latency):
+Edit:
+<JIRA_INSTALL>/conf/server.xml
+
+Ensure AccessLogValve is enabled:
+<Valve className="org.apache.catalina.valves.AccessLogValve"
+       directory="logs"
+       prefix="jira_access_log"
+       suffix=".log"
+       pattern="%h %l %u %t &quot;%r&quot; %s %b %D" />
+
+Restart Jira.
+✅ This captures:
+•	Client IP
+•	HTTP method
+•	REST path
+•	Status code
+•	Response time
+
+Step 2: Identify log files
+Typical log locations:
+Log Type	Path
+Application logs	<JIRA_HOME>/log/atlassian-jira.log
+Access logs	<JIRA_INSTALL>/logs/jira_access_log*.log
+
+Step 3: Ship logs to Elastic (Filebeat)
+Install Filebeat on the Jira node.
+3.1 Filebeat input configuration
+filebeat.yml
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/atlassian/jira/log/atlassian-jira.log
+      - /opt/atlassian/jira/logs/jira_access_log*.log
+    fields:
+      service: jira
+      log_type: rest_api
+    fields_under_root: true
+
+3.2 (Recommended) Parse REST logs with processors
+Example for access logs:
+processors:
+  - dissect:
+      tokenizer: '%{client_ip} %{ident} %{user} [%{timestamp}] "%{method} %{url} %{protocol}" %{status} %{bytes} %{duration}'
+      field: "message"
+      target_prefix: "http"
+
+3.3 Send logs to Elasticsearch
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "jira-rest-logs-%{+yyyy.MM.dd}"
+
+Restart Filebeat:
+systemctl restart filebeat
+
+Step 4: Configure Kibana
+4.1 Create index pattern
+In Kibana → Stack Management → Index Patterns
+jira-rest-logs-*
+
+Time field:
+@timestamp
+
+4.2 Useful Kibana queries (KQL)
+All REST API calls
+service : "jira" AND url : "/rest
+
+Failed REST calls
+status >= 400
+
+Calls by user
+user : "jirauser"
+Slow REST APIs (>2 seconds)
+duration > 2000000
+
+4.3 Suggested dashboards
+Create visualizations for:
+•	REST calls per minute
+•	Top REST endpoints
+•	Error rate (4xx / 5xx)
+•	Slowest APIs
+•	Top calling users or IPs
+
+
+
